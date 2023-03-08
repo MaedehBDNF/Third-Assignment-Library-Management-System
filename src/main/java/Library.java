@@ -161,25 +161,39 @@ public class Library {
 
     //librarian related functions
 
-    public void addLibrarian(){
-        //TODO
+    public void addLibrarian(Librarian librarian){
+        listOfLibrarians.add(librarian);
     }
 
-    public void removeLibrarian(){
-        //TODO
+    public boolean removeLibrarian(Librarian librarian){
+        if (this.listOfLibrarians.contains(librarian)) {
+            return listOfLibrarians.remove(librarian);
+        }
+        return false;
     }
 
-    public void searchLibrarian(){
-        //TODO
+    public Librarian updateLibrarian(Librarian librarian, AccountEntity accountEntity){
+        if (this.listOfLibrarians.contains(librarian)){
+            int index = listOfLibrarians.indexOf(librarian);
+            if (!accountEntity.username.equals("") && !librarian.getUsername().equals(accountEntity.username)){
+                if (this.doesLibrarianExist(accountEntity.username)) {
+                    return null;
+                }
+            }
+            listOfLibrarians.set(index, librarian.update(accountEntity));
+            return librarian.update(accountEntity);
+        }
+        return null;
     }
 
-    public void updateLibrarian(){
-        //TODO
+    public Librarian searchLibrarian(String username){
+        for (Librarian librarian: listOfLibrarians){
+            if (librarian.getUsername().equals(username)){
+                return librarian;
+            }
+        }
+        return null;
     }
 
-    public void doesLibrarianExist(){
-        //TODO
-    }
-
-
+    public boolean doesLibrarianExist(String username){ return searchLibrarian(username) != null; }
 }
