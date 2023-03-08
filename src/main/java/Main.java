@@ -684,3 +684,47 @@ public class Main {
             librarianMenu();
         }
     }
+
+    private static void updateUsernameMenu() {
+        System.out.print("Enter the new username: ");
+        String newUsername = in.nextLine();
+        if (newUsername.length() == 0) {
+            System.out.println("Wrong username. Try again.");
+            updateUsernameMenu();
+        }
+        if (library.doesUserExist(newUsername)) {
+            System.out.println("This username is taken. Try another one.");
+            updateUsernameMenu();
+        }
+        User user = library.searchUser(currentUserUsername);
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.username = newUsername;
+        if (library.updateUser(user, accountEntity) != null) {
+            currentUserUsername = newUsername;
+            System.out.println("Username updated successfully.");
+            userMenu();
+        } else {
+            System.out.println("Something went wrong. Try again.");
+            updateUsernameMenu();
+        }
+    }
+
+    private static void updatePasswordMenu() {
+        System.out.print("Enter the new password: ");
+        String newPassword = in.nextLine();
+        if (newPassword.length() == 0) {
+            System.out.println("Wrong password. Try again.");
+            updatePasswordMenu();
+        }
+        User user = library.searchUser(currentUserUsername);
+        AccountEntity accountEntity = new AccountEntity();
+        accountEntity.password = newPassword;
+        if (library.updateUser(user, accountEntity) != null) {
+            System.out.println("Password updated successfully.");
+            userMenu();
+        } else {
+            System.out.println("Something went wrong. Try again.");
+            updatePasswordMenu();
+        }
+    }
+}
