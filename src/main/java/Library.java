@@ -1,39 +1,119 @@
+import java.util.ArrayList;
+import java.util.*;
+
 public class Library {
-    /*
-    * The library should have a list of books.
-    * The library should have a map of books ISBNs which is linked to the amount of book
-    -> (for example: harry potter -> 4 means there are currently 4 harry potter books)
-    * The library should have a list of users and a list of librarians.
-     */
 
-    //book related functions
+    private ArrayList<Book> listOfBooks= new ArrayList<>();
+    private ArrayList<User> listOfUsers= new ArrayList<>();
+    private ArrayList<Librarian> listOfLibrarians= new ArrayList<>();
+    private Map<String,Integer> bookCounter = new HashMap<String, Integer>();
 
-    public void addBook(){
-        //TODO
+    // book related functions
+
+    public void addBook(Book book){
+        if (this.listOfBooks.contains(book)){
+            increaseBook(book.getIsbn());
+        } else {
+            listOfBooks.add(book);
+            bookCounter.put(book.getIsbn(), 1);
+        }
     }
 
-    public void removeBook(){
-        //TODO
+    public boolean removeBook(Book book){
+        if (listOfBooks.contains(book)) {
+            decreaseBook(book.getIsbn());
+            return listOfBooks.remove(book);
+        }
+        return false;
     }
 
-    public void searchBook(){
-        //TODO
+    public Book updateBook(Book book, BookEntity bookEntity){
+        if (this.listOfBooks.contains(book)) {
+            int index = listOfBooks.indexOf(book);
+            if (!bookEntity.isbn.equals("") && !book.getIsbn().equals(bookEntity.isbn)) {
+                if (!this.bookCounter.containsKey(bookEntity.isbn)) {
+                    int bookCounter = this.bookCounter.get(book.getIsbn());
+                    this.bookCounter.remove(book.getIsbn());
+                    this.bookCounter.put(bookEntity.isbn, bookCounter);
+                } else {
+                    return null;
+                }
+            }
+            listOfBooks.set(index, book.update(bookEntity));
+            return listOfBooks.get(index);
+        }
+        return null;
     }
 
-    public void updateBook(){
-        //TODO
+    public Book[] searchBook(BookEntity bookEntity){
+        ArrayList<Book> result = new ArrayList<>();
+        for (Book book: listOfBooks) {
+            if (
+                    book.getName().equals(bookEntity.name) ||
+                    book.getAuthor().equals(bookEntity.author) ||
+                    book.getYearOfPublish() == bookEntity.yearOfPublish ||
+                    book.getIsbn().equals(bookEntity.isbn)
+            ) {
+                result.add(book);
+            }
+        }
+        Book[] resultArray = new Book[result.size()];
+        return result.toArray(resultArray);
     }
 
-    public void doesBookExist(){
-        //TODO
+    public boolean doesBookExist(String isbn){
+        return this.bookCounter.containsKey(isbn);
     }
 
-    public void increaseBook(){
-        //TODO
+    public boolean borrowBook(User user, Book book) {
+        int bookIndex = this.listOfBooks.indexOf(book);
+        if (bookIndex == -1 || book.getIsInRent()) {
+            return false;
+        }
+        user.rentBook(book);
+        book.rentBook();
+        this.listOfBooks.set(bookIndex, book);
+        return true;
     }
 
-    public void decreaseBook(){
-        //TODO
+    public boolean returnBook(User user, Book book) {
+        int bookIndex = this.listOfBooks.indexOf(book);
+        if (bookIndex == -1 || !book.getIsInRent()) {
+            return false;
+        }
+        user.returnBook(book);
+        book.returnBook();
+        this.listOfBooks.set(bookIndex, book);
+        return true;
+    }
+
+    private void increaseBook(String isbn){
+        int numOfBook = bookCounter.get(isbn) + 1;
+        bookCounter.replace(isbn, numOfBook);
+    }
+
+    private void decreaseBook(String isbn){
+        int numOfBook = bookCounter.get(isbn) - 1;
+        if (numOfBook == 0) {
+            bookCounter.remove(isbn);
+        } else {
+            bookCounter.replace(isbn, numOfBook);
+        }
+    }
+
+    public String[] getBookStatistic(String bookName){
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.name = bookName;
+        Book[] foundBooks = searchBook(bookEntity);
+        if (foundBooks.length == 0) {
+            return null;
+        }
+        String[] result = new String[foundBooks.length];
+        for (int i = 0; i < foundBooks.length; i++) {
+            Book book = foundBooks[i];
+            result[i] = book.getName() + "(ISBN: " + book.getIsbn() + ") -> " + bookCounter.get(book.getIsbn());
+        }
+        return result;
     }
 
     //user related functions
