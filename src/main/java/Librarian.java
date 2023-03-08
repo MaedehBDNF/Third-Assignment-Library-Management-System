@@ -1,10 +1,12 @@
-public class Librarian {
-    /*
-    * The librarian should have a username and a password
-    * The librarian should be able to search users, librarians and books
-    * The librarian should be able to add\remove\update user add\remove\update_
-    _ librarian and add\remove\update book
-     */
+public class Librarian extends Account {
 
+    public Librarian(String username, String password) {
+        super(username, password);
+    }
 
+    @Override
+    public Librarian update(AccountEntity accountEntity) {
+        super.update(accountEntity);
+        return this;
+    }
 }
