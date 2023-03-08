@@ -118,24 +118,45 @@ public class Library {
 
     //user related functions
 
-    public void addUser(){
-        //TODO
+    public void addUser(User user){
+        listOfUsers.add(user);
     }
 
-    public void removeUser(){
-        //TODO
+    public boolean removeUser(User user) {
+        if (this.listOfUsers.contains(user)) {
+            return listOfUsers.remove(user);
+        }
+        return false;
     }
 
-    public void searchUser(){
-        //TODO
+    public User updateUser(User user, AccountEntity accountEntity) {
+        if (this.listOfUsers.contains(user)) {
+            int index = listOfUsers.indexOf(user);
+            if (!accountEntity.username.equals("") && !user.getUsername().equals(accountEntity.username)) {
+                if (doesUserExist(accountEntity.username)) {
+                    return null;
+                }
+            listOfUsers.set(index, user.update(accountEntity));
+            return listOfUsers.get(index);
+            }
+            listOfUsers.set(index, user.update(accountEntity));
+            return listOfUsers.get(index);
+        }
+        return null;
     }
 
-    public void updateUser(){
-        //TODO
+    public User searchUser(String username){
+        for (User user: listOfUsers){
+            if (user.getUsername().equals(username)){
+                return user;
+            }
+        }
+        return null;
     }
 
-    public void doesUserExist(){
-        //TODO
+
+    public boolean doesUserExist(String username){
+        return searchUser(username) != null;
     }
 
     //librarian related functions
